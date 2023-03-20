@@ -1,0 +1,26 @@
+<div class="main">  
+  
+<div class=" main-container">
+  <img src="assets/Action Labs.jpg" alt="your-image-alt-text">
+  <hr>
+  <h2 class="title">BRL EXCHANGE RATE</h2>
+  <div>   
+    <input type="text" class="input">
+  </div>
+ <button (click)="convert()">EXCHANGE RESULTS</button>
+ <hr class="hr1">
+ <div>
+  <th>
+    <p class="ratenow-p">Exchange rate now</p>
+    <p class="daterate-p">09/03/2022 - 15h09</p>
+  </th>
+  <th><p class="currency-p">{{base}}/BRL</p></th>
+ </div>
+ <div class="result-container">
+    <p class="result-p"> R$ {{result}}</p>
+  </div>
+  <hr class="hr2">
+  <div class="footer">
+    <p class="footer-content">Copyright 2023 - Action Labs</p>
+  </div>
+</div>
