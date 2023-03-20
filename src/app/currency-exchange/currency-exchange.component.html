@@ -1,26 +1,139 @@
-<div class="main">  
-  
-<div class=" main-container">
-  <img src="assets/Action Labs.jpg" alt="your-image-alt-text">
-  <hr>
-  <h2 class="title">BRL EXCHANGE RATE</h2>
-  <div>   
-    <input type="text" class="input">
+<div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <h1 class="mt-6 text-center text-3xl font-bold tracking-tight text-primary">
+    BRL Exchange Rate
+  </h1>
+
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <form class="space-y-6" action="#" method="POST">
+        <div>
+          <label
+            for="currencyCode"
+            class="block text-sm font-medium leading-6 text-gray-900">
+            Provide the currency code (e.g: USD)
+            </label>
+          <div class="mt-2">
+            <input
+              type="text"
+              name="currencyCode"
+              class="block w-full rounded-md border-0 py-2 px-3 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              placeholder="Enter the currency code"
+              [(ngModel)]="baseCurrency"
+            />
+          </div>
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            (click)="exchangeRate()"
+            class="flex w-full justify-center rounded-full bg-primary text-white uppercase font-semibold py-2 px-3"
+          >
+            Exchange Result
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
- <button (click)="convert()">EXCHANGE RESULTS</button>
- <hr class="hr1">
- <div>
-  <th>
-    <p class="ratenow-p">Exchange rate now</p>
-    <p class="daterate-p">09/03/2022 - 15h09</p>
-  </th>
-  <th><p class="currency-p">{{base}}/BRL</p></th>
- </div>
- <div class="result-container">
-    <p class="result-p"> R$ {{result}}</p>
-  </div>
-  <hr class="hr2">
-  <div class="footer">
-    <p class="footer-content">Copyright 2023 - Action Labs</p>
+</div>
+
+<div
+  class="flex min-h-full flex-col justify-center"
+  *ngIf="currentExchangeRate">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div class="grid grid-cols-2">
+        <div>
+          <p class="text-lg font-semibold">Exchange rate now</p>
+          <p class="text-sm font-thin">
+            {{ currentExchangeRate.lastUpdatedAt | date : "dd/MM/yyyy HH:mm" }}
+          </p>
+        </div>
+
+        <div class="text-primary text-2xl font-semibold justify-self-end self-center">
+          {{ currentExchangeRate.fromSymbol }}
+          /
+          {{ currentExchangeRate.toSymbol }}
+        </div>
+      </div>
+
+      <div class="px-3 py-6 text-center bg-primary-100 mt-4">
+        <label class="text-3xl font-bold text-primary">
+          R$ {{ currentExchangeRate.exchangeRate.toFixed(2) }}
+        </label>
+      </div>
+
+      <div class="grid grid-cols-2 mt-8">
+        <label class="text-lg font-semibold uppercase">Last 30 days</label>
+        <label
+          class="text-3xl font-semibold justify-self-end text-primary cursor-pointer"
+          (click)="toggleDailyExchangeRate()">
+          {{ dailyExchangeToggleText }}
+        </label>
+      </div>
+
+      <div *ngIf="showDailyExchangeRate && dailyExchangeRate.length" class="w-full bg-gray-100 mt-8 p-3">
+        <div *ngFor="let exchangeRate of dailyExchangeRate; index as i; first as isFirst">
+          <div class="bg-white p-2" [class.mt-4]="!isFirst">
+            <label class="text-primary font-semibold">
+              {{ exchangeRate.date | date : "dd/MM/yyyy" }}
+            </label>
+            <div class="grid grid-cols-2 mt-4">
+              <div class="uppercase">
+                <label class="font-thin text-sm">Open:</label>
+                <label class="ml-2 font-semibold">
+                  R$ {{ exchangeRate.open }}
+                </label>
+              </div>
+
+              <div class="uppercase justify-self-end mt-1">
+                <label class="font-thin text-sm">High:</label>
+                <label class="ml-2 font-semibold">
+                  R$ {{ exchangeRate.high }}
+                </label>
+              </div>
+
+              <div class="uppercase mt-1">
+                <label class="font-thin text-sm">Close:</label>
+                <label class="ml-2 font-semibold">
+                  R$ {{ exchangeRate.close }}
+                </label>
+              </div>
+
+              <div class="uppercase justify-self-end mt-1">
+                <label class="font-thin text-sm">Low:</label>
+                <label class="ml-2 font-semibold">
+                  R$ {{ exchangeRate.low }}
+                </label>
+              </div>
+
+              <div class="uppercase mt-1 col-span-2">
+                <label class="font-thin text-sm">Close diff(%):</label>
+                <label class="ml-2 font-semibold">
+                  <ng-container
+                    *ngIf="exchangeRate.open | percentageDifference : exchangeRate.close as percentageDiff">
+                    <label [ngClass]="percentageDiff.isPositive ? 'text-green-500' : 'text-red-500'">
+                      {{ percentageDiff.value }}
+
+                      <ng-container *ngIf="percentageDiff.isPositive === true">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 inline">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                        </svg>
+                      </ng-container>
+
+                      <ng-container *ngIf="percentageDiff.isPositive === false">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 inline">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                      </ng-container>
+                    </label>
+                  </ng-container>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
